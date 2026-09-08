@@ -112,12 +112,15 @@ button {
   text-decoration: none;
 }
 
-.masthead-about {
-  font-size: 12px;
-  letter-spacing: 0.4px;
+.masthead-nav { display: flex; gap: 22px; }
+
+.masthead-nav a {
+  font-size: 14px;
   color: var(--ink-muted);
   text-decoration: none;
 }
+
+.masthead-nav a:hover { color: var(--navy); }
 
 /* ==========================================================================
    The filter sentence
@@ -353,6 +356,37 @@ button {
 
 .spec dt { color: var(--ink-muted); flex-shrink: 0; }
 .spec dd { color: var(--ink); margin: 0; text-align: right; }
+
+/* Small map on a space's own page. Interaction is switched off — a phone
+   finger landing on it should scroll the page, not pan the map — and
+   "Get directions" hands off to a real map app for actual navigation. */
+.mini-map { height: 200px; margin: 22px var(--gutter) 0; border: 1px solid var(--rule); background: var(--paper-deep); }
+
+.directions-link {
+  display: inline-block;
+  margin: 12px var(--gutter) 0;
+  font-size: 13.5px;
+  color: var(--blue);
+  border-bottom: 1px solid var(--blue);
+  padding-bottom: 2px;
+  text-decoration: none;
+}
+
+.map-note {
+  margin: 22px var(--gutter) 0;
+  font-size: 13.5px;
+  color: var(--ink-muted);
+}
+
+/* Overview map: every space on one map, full height beneath the masthead. */
+.overview-map {
+  height: calc(100vh - 78px);
+  min-height: 420px;
+}
+
+.map-popup { font-family: var(--font-ui); }
+.map-popup strong { font-family: var(--font-display); font-size: 16px; display: block; margin-bottom: 4px; }
+.map-popup a { font-size: 13px; color: var(--blue); }
 
 .checked {
   font-size: 13px;
