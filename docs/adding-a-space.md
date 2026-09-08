@@ -76,6 +76,7 @@ Fill it in. Here is a real one to work from:
 | `org` | Who runs it |
 | `area` | Roughly where in Exmouth. Shown after the org |
 | `setting` | Exactly `Indoor` or `Outdoor` |
+| `lat`, `lng` | The coordinates of the space. See below |
 | `capacity` | A plain number, no quote marks, no "approx" |
 | `capacityApprox` | `true` if the number is your best guess |
 | `occasions` | Pick from the list below. Spelling must match |
@@ -99,6 +100,29 @@ Use these exact words, or the filter will silently miss the space:
 
 To add a new occasion to the whole site, add it to `OCCASIONS` near the top of
 `assets/js/app.js` and to the same list in `tools/validate.mjs`.
+
+### Finding the coordinates
+
+Open [Google Maps](https://maps.google.com), search for the venue, then
+right-click (or long-press on a phone) exactly on the spot. The coordinates
+appear at the top of the menu, ready to copy — something like
+`50.6178, -3.4128`. The first number is `lat`, the second is `lng`.
+
+```json
+"lat": 50.6178,
+"lng": -3.4128,
+```
+
+No quote marks around the numbers, and no account or sign-up needed — you're
+just using Maps in a browser. `node tools/validate.mjs` will flag a
+coordinate that lands outside Exmouth, which usually means a missing minus
+sign on the longitude or the two numbers swapped.
+
+The site draws the actual maps using
+[Leaflet](https://leafletjs.com) and [OpenStreetMap](https://www.openstreetmap.org)
+rather than Google Maps — both entirely free, with no API key and no account
+for this project to maintain. Google Maps is just the easiest place to look
+a location up.
 
 ### Contact
 
