@@ -21,8 +21,14 @@ const SETTINGS = ['Indoor', 'Outdoor'];
 const CONTACT_TYPES = ['email', 'phone', 'link'];
 const REQUIRED = [
   'id', 'name', 'org', 'area', 'setting', 'capacity',
-  'occasions', 'features', 'priceTier', 'summary', 'description', 'contact'
+  'occasions', 'features', 'priceTier', 'summary', 'description', 'contact',
+  'lat', 'lng'
 ];
+
+// A loose box around Exmouth and its immediate surroundings — catches a
+// swapped lat/lng, a missing minus sign, or a coordinate typed for the
+// wrong town entirely, without being so tight it rejects genuine edge cases.
+const EXMOUTH_BOUNDS = { latMin: 50.55, latMax: 50.68, lngMin: -3.48, lngMax: -3.30 };
 
 const problems = [];
 const notes = [];
@@ -80,6 +86,18 @@ for (const file of files) {
     fail(file, 'priceTier must be 1, 2 or 3');
   }
 
+  if (space.lat !== undefined || space.lng !== undefined) {
+    if (typeof space.lat !== 'number' || typeof space.lng !== 'number') {
+      fail(file, 'lat and lng must be plain numbers, with no quote marks around them');
+    } else if (
+      space.lat < EXMOUTH_BOUNDS.latMin || space.lat > EXMOUTH_BOUNDS.latMax ||
+      space.lng < EXMOUTH_BOUNDS.lngMin || space.lng > EXMOUTH_BOUNDS.lngMax
+    ) {
+      fail(file, `lat/lng (${space.lat}, ${space.lng}) falls outside Exmouth — check for a swapped ` +
+        'lat/lng, a missing minus sign on the longitude, or a misplaced decimal point');
+    }
+  }
+
   for (const occasion of space.occasions || []) {
     if (!OCCASIONS.includes(occasion)) {
       fail(file, `occasion "${occasion}" is not recognised. Use one of: ${OCCASIONS.join(', ')}`);
@@ -97,6 +115,10 @@ for (const file of files) {
     fail(file, 'contact.value should be a full URL starting with https://');
   }
   if (!contact.value) fail(file, 'contact.value is missing');
+
+  if (space.email && !space.email.includes('@')) {
+    fail(file, 'email should be an email address');
+  }
 
   if (space.image) {
     try {
