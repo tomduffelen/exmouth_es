@@ -1,10 +1,121 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Hello World</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Space</title>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f1ec;
+      color: #222;
+    }
+
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px;
+      background:
+        linear-gradient(#0008, #0008),
+        url("wide_interior_shot_of_a_modern_cozy_event_dining.png")
+        center/cover;
+    }
+
+    .card {
+      background: #fffffff2;
+      padding: 50px;
+      border-radius: 24px;
+      max-width: 650px;
+      box-shadow: 0 20px 60px #0004;
+    }
+
+    h1 {
+      font-size: 52px;
+      margin: 0 0 15px;
+    }
+
+    p {
+      font-size: 19px;
+      line-height: 1.6;
+      color: #555;
+    }
+
+    .details {
+      display: flex;
+      gap: 15px;
+      margin: 30px 0;
+    }
+
+    .detail {
+      flex: 1;
+      padding: 20px;
+      background: #f3f1ec;
+      border-radius: 15px;
+    }
+
+    .detail strong {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
+
+    button {
+      border: 0;
+      padding: 15px 30px;
+      border-radius: 30px;
+      background: #222;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 38px; }
+      .card { padding: 30px; }
+      .details { flex-direction: column; }
+    }
+  </style>
 </head>
+
 <body>
-  <h1>Hello World!</h1>
-  <p style="color:hotpink;">This is a test !!!!! </p>
+
+  <section class="hero">
+    <div class="card">
+      <h1>Something Worth Celebrating</h1>
+
+      <p>
+        A relaxed evening of good food, good company,
+        and probably too much wine.
+      </p>
+
+      <div class="details">
+        <div class="detail">
+          <strong>📅 24 October</strong>
+          Friday evening
+        </div>
+
+        <div class="detail">
+          <strong>📍 The Event Space</strong>
+          Somewhere lovely
+        </div>
+      </div>
+
+      <button onclick="alert('See you there! 🎉')">
+        Count me in
+      </button>
+    </div>
+  </section>
+
 </body>
 </html>
