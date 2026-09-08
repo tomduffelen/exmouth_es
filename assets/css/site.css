@@ -83,8 +83,8 @@ button {
 
 /* Small tracked label. Used sparingly — three per screen at most. */
 .label {
-  font-size: 11px;
-  letter-spacing: 1.8px;
+  font-size: 12.5px;
+  letter-spacing: 1.4px;
   text-transform: uppercase;
   color: var(--ink-muted);
   margin: 0;
@@ -106,10 +106,9 @@ button {
 
 .wordmark {
   font-family: var(--font-display);
-  font-size: 13px;
-  letter-spacing: 2.6px;
+  font-size: 25px;
+  letter-spacing: 0.3px;
   color: var(--navy);
-  text-transform: uppercase;
   text-decoration: none;
 }
 
@@ -132,30 +131,35 @@ button {
 
 .sentence {
   font-family: var(--font-display);
-  font-size: 23px;
-  line-height: 1.45;
+  font-size: 26px;
+  line-height: 1.55;
   color: var(--ink);
-  margin: 11px 0 0;
+  margin: 12px 0 0;
 }
 
-/* Each tappable value in the sentence. */
+/* Each tappable value in the sentence, styled as a tag so it reads as a
+   control rather than styled prose. */
 .slot {
   font: inherit;
-  color: var(--ink);
-  border-bottom: 1px solid var(--sand);
-  padding: 2px 1px;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  background: rgba(28, 79, 151, 0.08);
+  color: var(--navy);
+  padding: 3px 11px 4px;
+  border-radius: 5px;
+  margin: 2px 1px;
   cursor: pointer;
-  transition: border-color 0.15s ease;
+  transition: background-color 0.15s ease;
 }
 
-.slot:hover { border-bottom-color: var(--blue); }
-.slot[data-set="true"] { color: var(--navy); }
+.slot:hover { background: rgba(28, 79, 151, 0.14); }
+.slot[data-set="true"] { background: rgba(28, 79, 151, 0.16); }
 
 .slot .chev {
-  font-size: 0.62em;
-  color: var(--ink-muted);
-  margin-left: 3px;
-  vertical-align: 2px;
+  font-size: 0.6em;
+  font-weight: 600;
+  color: var(--blue);
 }
 
 .finder-foot {
@@ -166,14 +170,14 @@ button {
 }
 
 .count {
-  font-size: 12px;
-  letter-spacing: 0.4px;
+  font-size: 13.5px;
+  letter-spacing: 0.3px;
   color: var(--ink-muted);
 }
 
 .refine {
-  font-size: 12px;
-  letter-spacing: 0.4px;
+  font-size: 13.5px;
+  letter-spacing: 0.3px;
   color: var(--blue);
   border-bottom: 1px solid var(--blue);
   padding-bottom: 2px;
@@ -189,10 +193,10 @@ button {
   display: block;
   width: 100%;
   text-align: left;
-  border-bottom: 1px solid var(--rule);
+  margin-bottom: 36px;
 }
 
-.space:last-child { border-bottom: none; }
+.space:last-child { margin-bottom: 0; }
 
 /* Photo. Tall 4:5 crop on mobile. */
 .shot {
@@ -204,48 +208,52 @@ button {
 
 .shot img { width: 100%; height: 100%; object-fit: cover; }
 
-/* Fallback when a space has no photograph yet. */
+/* Fallback when a space has no photograph yet: a short banner rather than
+   a full photo-height block, so it can never be mistaken for a heading
+   belonging to the next space down. */
 .shot-empty {
+  height: 108px;
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 100%;
+  padding: 0 var(--gutter);
   background: var(--navy);
+  position: relative;
+  overflow: hidden;
 }
+
+.shot-empty.detail-media { height: 176px; }
 
 .shot-empty span {
   font-family: var(--font-display);
-  font-size: 15px;
-  letter-spacing: 2.4px;
-  text-transform: uppercase;
-  color: rgba(247, 245, 241, 0.5);
-  text-align: center;
-  padding: 0 24px;
-  line-height: 1.6;
+  font-size: 21px;
+  color: var(--paper);
 }
 
-.space-text { padding: 16px var(--gutter) 24px; }
+/* The caption sits on a faint tint directly under its own photo with almost
+   no gap, so it bonds to the image above it. The generous margin before the
+   *next* space (set on .space above) is what separates one from another. */
+.space-text { padding: 11px var(--gutter) 22px; background: var(--paper-deep); }
 
-.space-name { font-size: 24px; }
+.space-name { font-size: 26px; }
 
 .space-org {
-  font-size: 12px;
-  letter-spacing: 0.5px;
+  font-size: 14px;
+  letter-spacing: 0.3px;
   color: var(--ink-muted);
-  margin: 8px 0 0;
+  margin: 9px 0 0;
 }
 
 .space-meta {
-  font-size: 13px;
+  font-size: 15px;
   color: var(--ink-body);
-  margin: 11px 0 0;
+  margin: 12px 0 0;
 }
 
 .empty {
   padding: 60px var(--gutter);
   text-align: center;
   color: var(--ink-muted);
-  font-size: 14px;
+  font-size: 15px;
 }
 
 /* ==========================================================================
@@ -278,24 +286,57 @@ button {
 
 .detail-head { padding: 24px var(--gutter) 0; max-width: var(--maxw-read); }
 
-.detail-name { font-size: 28px; margin: 10px 0 0; }
+.detail-name { font-size: 33px; margin: 10px 0 0; }
 
 .detail-org {
-  font-size: 12px;
-  letter-spacing: 0.5px;
+  font-size: 14px;
+  letter-spacing: 0.3px;
   color: var(--ink-muted);
-  margin: 9px 0 0;
+  margin: 10px 0 0;
+}
+
+/* Three glanceable facts right under the name, before the description —
+   the reason someone opened this page shouldn't be the last thing they see. */
+.quickfacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 18px 0 0;
+}
+
+.fact {
+  background: rgba(28, 79, 151, 0.08);
+  color: var(--navy);
+  font-size: 14px;
+  padding: 6px 13px;
+  border-radius: 5px;
 }
 
 .detail-desc {
-  font-size: 15px;
-  line-height: 1.78;
+  font-size: 16.5px;
+  line-height: 1.75;
   color: var(--ink-body);
-  margin: 16px 0 0;
+  margin: 18px 0 0;
+}
+
+.desc-collapsed {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.read-more {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 14.5px;
+  color: var(--blue);
+  border-bottom: 1px solid var(--blue);
+  padding-bottom: 2px;
 }
 
 .specs {
-  padding: 24px var(--gutter) 0;
+  padding: 22px var(--gutter) 0;
   max-width: var(--maxw-read);
 }
 
@@ -303,9 +344,9 @@ button {
   display: flex;
   justify-content: space-between;
   gap: 24px;
-  padding: 12px 0;
+  padding: 13px 0;
   border-top: 1px solid var(--rule);
-  font-size: 13px;
+  font-size: 14.5px;
 }
 
 .spec:last-of-type { border-bottom: 1px solid var(--rule); }
@@ -314,10 +355,10 @@ button {
 .spec dd { color: var(--ink); margin: 0; text-align: right; }
 
 .checked {
-  font-size: 11px;
-  letter-spacing: 0.4px;
+  font-size: 13px;
+  letter-spacing: 0.3px;
   color: var(--ink-faint);
-  padding: 14px var(--gutter) 120px;
+  padding: 16px var(--gutter) 120px;
   max-width: var(--maxw-read);
 }
 
@@ -515,7 +556,7 @@ button {
     padding: 0 var(--gutter);
   }
 
-  .space { border-bottom: none; margin-bottom: 44px; }
+  .space { margin-bottom: 44px; }
   .space-text { padding-left: 0; padding-right: 0; }
 
   .shot { aspect-ratio: 3 / 4; }
