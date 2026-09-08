@@ -3,6 +3,8 @@
   "name": "Gorfin Hall",
   "org": "Exmouth Town Council",
   "area": "Town centre",
+  "email": "reception@exmouth.gov.uk",
+  "phone": "01395 276167",
   "lat": 50.6186,
   "lng": -3.4133,
   "setting": "Indoor",
@@ -28,7 +30,7 @@
   "contact": {
     "type": "email",
     "value": "reception@exmouth.gov.uk",
-    "name": "Exmouth Town Council, 01395 276167"
+    "name": "Exmouth Town Council"
   },
   "source": "https://exmouth.gov.uk/gorfin-hall/",
   "checked": "2026-09"

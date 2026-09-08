@@ -3,6 +3,8 @@
   "name": "Room With a View",
   "org": "The Grove Exmouth",
   "area": "On the seafront",
+  "email": "groveexmouth@youngs.co.uk",
+  "phone": "01395 272101",
   "lat": 50.6142,
   "lng": -3.4103,
   "setting": "Indoor",
@@ -28,7 +30,7 @@
   "contact": {
     "type": "email",
     "value": "groveexmouth@youngs.co.uk",
-    "name": "The Grove Exmouth, 01395 272101"
+    "name": "The Grove Exmouth"
   },
   "source": "https://www.groveexmouth.co.uk/parties/",
   "checked": "2026-09"

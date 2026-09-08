@@ -18,6 +18,9 @@
   "priceTier": 1,
   "priceFrom": "Price on request",
 
+  "phone": "",
+  "email": "",
+
   "summary": "One sentence for the browse list.",
   "description": "A paragraph for the space's own page. What is it like, what is it good for, what should someone know before enquiring.",
 
