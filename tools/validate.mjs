@@ -120,14 +120,20 @@ for (const file of files) {
     fail(file, 'email should be an email address');
   }
 
-  if (space.image) {
-    try {
-      await access(join(root, space.image));
-    } catch {
-      fail(file, `image "${space.image}" does not exist. Check the path and the file extension.`);
+  if (space.image !== undefined) {
+    fail(file, 'this file still uses "image" (singular) — rename it to "images" and make it a list, e.g. ["assets/img/spaces/name.jpg"]');
+  } else if (Array.isArray(space.images) && space.images.length) {
+    for (const path of space.images) {
+      try {
+        await access(join(root, path));
+      } catch {
+        fail(file, `image "${path}" does not exist. Check the path and the file extension.`);
+      }
     }
+  } else if (space.images === undefined) {
+    fail(file, 'missing "images" — use an empty list [] if there are no photos yet');
   } else {
-    warn(file, 'no photograph yet — the name will show on a navy panel instead');
+    warn(file, 'no photographs yet — the name will show on a navy panel instead');
   }
 
   if (!space.source) warn(file, 'no source link, so the details cannot be checked later');
