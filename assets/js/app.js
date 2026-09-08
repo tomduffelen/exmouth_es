@@ -93,14 +93,44 @@
      NOT the same height as a real photo, so it can never be mistaken for a
      heading belonging to the next space down. */
   function shotHTML(space, kind) {
-    if (space.image) {
-      var cls = kind === 'detail' ? 'detail-shot' : 'shot';
-      return '<div class="' + cls + '">' +
-        '<img src="' + esc(space.image) + '" alt="' + esc(space.name) + '" data-org="' + esc(space.org) + '" loading="lazy" ' +
-        'onerror="window.exmouthImageFallback(this, \'' + kind + '\')">' +
+    var images = space.images || [];
+
+    if (kind === 'card') {
+      if (images.length) {
+        return '<div class="shot">' +
+          '<img src="' + esc(images[0]) + '" alt="' + esc(space.name) + '" data-org="' + esc(space.org) + '" loading="lazy" ' +
+          'onerror="window.exmouthImageFallback(this, \'card\')">' +
         '</div>';
+      }
+      return emptyShotMarkupRaw(space, 'card');
     }
-    return emptyShotMarkupRaw(space, kind);
+
+    // Detail page: no gallery chrome for the common single-photo case —
+    // the swipe strip and dots only appear once there's something to swipe.
+    if (images.length === 0) return emptyShotMarkupRaw(space, 'detail');
+
+    if (images.length === 1) {
+      return '<div class="detail-shot">' +
+        '<img src="' + esc(images[0]) + '" alt="' + esc(space.name) + '" data-org="' + esc(space.org) + '" loading="lazy" ' +
+        'onerror="window.exmouthImageFallback(this, \'detail\')">' +
+      '</div>';
+    }
+
+    return '<div class="detail-shot">' +
+      '<div class="gallery" id="detailGallery">' +
+        images.map(function (src, i) {
+          return '<div class="gallery-slide" data-slide="' + i + '">' +
+            '<img src="' + esc(src) + '" alt="' + esc(space.name) + ' — photo ' + (i + 1) + '" data-org="' + esc(space.org) + '" loading="' + (i === 0 ? 'eager' : 'lazy') + '" ' +
+            'onerror="window.exmouthGalleryImageError(this)">' +
+          '</div>';
+        }).join('') +
+      '</div>' +
+      '<div class="gallery-dots">' +
+        images.map(function (src, i) {
+          return '<button type="button" class="dot' + (i === 0 ? ' active' : '') + '" data-goto="' + i + '" aria-label="Photo ' + (i + 1) + ' of ' + images.length + '"></button>';
+        }).join('') +
+      '</div>' +
+    '</div>';
   }
 
   /* The banner shows the venue (org), not the specific room name — "Ocean
@@ -128,6 +158,56 @@
     span.textContent = imgEl.dataset.org || imgEl.alt;
     wrapper.appendChild(span);
   };
+
+  /* If one photo in a gallery is broken, remove just that slide and its dot
+     rather than losing every other working photo along with it. Only if
+     every photo has now failed does it fall back to the navy banner. */
+  window.exmouthGalleryImageError = function (imgEl) {
+    var wrap = imgEl.closest('.detail-shot');
+    if (!wrap) return;
+    var galleryEl = wrap.querySelector('.gallery');
+    var dotsEl = wrap.querySelector('.gallery-dots');
+    var slide = imgEl.closest('.gallery-slide');
+    var idx = slide ? Array.prototype.indexOf.call(galleryEl.children, slide) : -1;
+
+    if (slide) slide.remove();
+    if (dotsEl && idx > -1 && dotsEl.children[idx]) dotsEl.children[idx].remove();
+
+    if (!galleryEl.children.length) {
+      var backBtn = wrap.querySelector('[data-back]');
+      var org = imgEl.dataset.org || imgEl.alt;
+      wrap.className = 'shot-empty detail-media';
+      wrap.innerHTML = '';
+      if (backBtn) wrap.appendChild(backBtn);
+      var span = document.createElement('span');
+      span.textContent = org;
+      wrap.appendChild(span);
+    } else if (galleryEl.children.length === 1 && dotsEl) {
+      dotsEl.hidden = true;
+    }
+  };
+
+  /* Keeps the active dot in sync as someone swipes, and lets a tapped dot
+     scroll straight to that photo. Native scroll-snap does the actual
+     swipe physics — this just watches and reflects it. */
+  function wireGallery() {
+    var gallery = document.getElementById('detailGallery');
+    if (!gallery) return;
+    var dotsEl = gallery.parentNode.querySelector('.gallery-dots');
+    if (!dotsEl) return;
+
+    var syncTimer = null;
+    gallery.addEventListener('scroll', function () {
+      clearTimeout(syncTimer);
+      syncTimer = setTimeout(function () {
+        var index = Math.round(gallery.scrollLeft / gallery.clientWidth);
+        var dots = dotsEl.children;
+        for (var i = 0; i < dots.length; i++) {
+          dots[i].classList.toggle('active', i === index);
+        }
+      }, 80);
+    });
+  }
 
   /* --- Loading the data ------------------------------------------------ */
 
@@ -290,6 +370,8 @@
       }).addTo(detailMapInstance);
       L.marker([s.lat, s.lng]).addTo(detailMapInstance);
     }
+
+    wireGallery();
   }
 
   function formatChecked(value) {
@@ -498,6 +580,18 @@
       if (space) { window.location.hash = '#/space/' + space.dataset.space; return; }
 
       if (t.closest('[data-back]')) { window.location.hash = ''; return; }
+
+      var dot = t.closest('[data-goto]');
+      if (dot) {
+        var gallery = document.getElementById('detailGallery');
+        var i = Number(dot.dataset.goto);
+        if (gallery && typeof gallery.scrollTo === 'function') {
+          try { gallery.scrollTo({ left: i * gallery.clientWidth, behavior: 'smooth' }); } catch (err) {}
+        }
+        var dots = dot.parentNode.children;
+        for (var d = 0; d < dots.length; d++) dots[d].classList.toggle('active', d === i);
+        return;
+      }
 
       var readMore = t.closest('[data-read-more]');
       if (readMore) {
