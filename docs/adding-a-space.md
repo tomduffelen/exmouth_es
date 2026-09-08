@@ -83,6 +83,7 @@ Fill it in. Here is a real one to work from:
 | `features` | Free text. Three or four is plenty |
 | `priceTier` | `1` modest, `2` mid-range, `3` premium. Drives the budget filter |
 | `priceFrom` | Free text shown to people, e.g. `From about £90` |
+| `phone`, `email` | Optional. Shown as plain info on the page, same as Facilities — separate from `contact` below, which drives the actual enquiry button |
 | `summary` | One sentence for the browse list |
 | `description` | A paragraph for the space's own page |
 | `image` | Path to the photo, or `""` if you have none |
