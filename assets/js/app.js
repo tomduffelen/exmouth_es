@@ -57,6 +57,8 @@
 
   var el = {};
   var currentSpaceId = null;
+  var detailMapInstance = null;
+  var overviewMapInstance = null;
 
   /* --- Helpers --------------------------------------------------------- */
 
@@ -241,6 +243,11 @@
       ['Facilities', (s.features || []).join(', ')]
     ];
 
+    var hasCoords = typeof s.lat === 'number' && typeof s.lng === 'number';
+    var directionsUrl = hasCoords
+      ? 'https://www.google.com/maps/search/?api=1&query=' + s.lat + ',' + s.lng
+      : 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(s.name + ' ' + s.org + ' Exmouth');
+
     el.detail.innerHTML =
       shotHTML(s, 'detail').replace('">', '"><button type="button" class="back" data-back aria-label="Back to all spaces">←</button>') +
       '<div class="detail-head">' +
@@ -260,12 +267,27 @@
           return '<div class="spec"><dt>' + esc(row[0]) + '</dt><dd>' + esc(row[1]) + '</dd></div>';
         }).join('') +
       '</dl>' +
+      (hasCoords ? '<div class="mini-map" id="detailMap"></div>' : '<p class="map-note">A map for this space hasn\'t been added yet.</p>') +
+      '<a class="directions-link" href="' + directionsUrl + '" target="_blank" rel="noopener">Get directions</a>' +
       '<p class="checked">Details checked ' + esc(formatChecked(s.checked)) +
         (s.source ? ' · <a href="' + esc(s.source) + '" target="_blank" rel="noopener">source</a>' : '') +
         '. Please confirm availability and price with the venue.' +
         (s.imageCredit ? ' Photograph: ' + esc(s.imageCredit) + '.' : '') +
       '</p>' +
       '<div class="contact-bar"><div class="contact-bar-inner">' + action + '</div></div>';
+
+    if (detailMapInstance) { detailMapInstance.remove(); detailMapInstance = null; }
+    if (hasCoords && window.L) {
+      detailMapInstance = L.map('detailMap', {
+        zoomControl: false, dragging: false, scrollWheelZoom: false,
+        doubleClickZoom: false, touchZoom: false, boxZoom: false, keyboard: false
+      }).setView([s.lat, s.lng], 15);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19
+      }).addTo(detailMapInstance);
+      L.marker([s.lat, s.lng]).addTo(detailMapInstance);
+    }
   }
 
   function formatChecked(value) {
@@ -402,7 +424,8 @@
      leaving the site. The URL still updates, so a space can be shared. */
 
   function route() {
-    var match = window.location.hash.match(/^#\/space\/(.+)$/);
+    var hash = window.location.hash;
+    var match = hash.match(/^#\/space\/(.+)$/);
     var space = null;
 
     if (match) {
@@ -412,16 +435,55 @@
 
     if (space) {
       el.listView.hidden = true;
+      el.mapView.hidden = true;
       el.detail.hidden = false;
       renderDetail(space);
       document.title = space.name + ' — Exmouth Spaces';
+    } else if (hash === '#/map') {
+      el.listView.hidden = true;
+      el.detail.hidden = true;
+      el.detail.innerHTML = '';
+      el.mapView.hidden = false;
+      renderMapOverview();
+      document.title = 'Map — Exmouth Spaces';
     } else {
       el.detail.hidden = true;
       el.detail.innerHTML = '';
+      el.mapView.hidden = true;
       el.listView.hidden = false;
       document.title = 'Exmouth Spaces — find a space to hire in Exmouth';
     }
     window.scrollTo(0, 0);
+  }
+
+  /* All nine spaces on one map. The overview map is created once and reused
+     — Leaflet errors if you initialise a second map into the same element —
+     and invalidateSize() runs after showing it, since Leaflet measured a
+     zero-size container while the view was hidden. */
+  function renderMapOverview() {
+    if (!window.L) return;
+    var withCoords = SPACES.filter(function (s) { return typeof s.lat === 'number' && typeof s.lng === 'number'; });
+    if (!withCoords.length) return;
+
+    if (!overviewMapInstance) {
+      overviewMapInstance = L.map('overviewMap');
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19
+      }).addTo(overviewMapInstance);
+
+      withCoords.forEach(function (s) {
+        var popup = '<div class="map-popup"><strong>' + esc(s.name) + '</strong>' +
+          esc(s.org) + '<br><a href="#/space/' + esc(s.id) + '">Open this space</a></div>';
+        L.marker([s.lat, s.lng]).addTo(overviewMapInstance).bindPopup(popup);
+      });
+    }
+
+    var bounds = L.latLngBounds(withCoords.map(function (s) { return [s.lat, s.lng]; }));
+    setTimeout(function () {
+      overviewMapInstance.invalidateSize();
+      overviewMapInstance.fitBounds(bounds, { padding: [30, 30] });
+    }, 0);
   }
 
   /* --- Events ---------------------------------------------------------- */
@@ -514,6 +576,7 @@
     el.empty = $('empty');
     el.listView = $('listView');
     el.detail = $('detailView');
+    el.mapView = $('mapView');
     el.sheet = $('sheet');
     el.sheetBackdrop = $('sheetBackdrop');
 
