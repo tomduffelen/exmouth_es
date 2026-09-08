@@ -3,18 +3,31 @@
   "name": "Imperial Recreation Ground",
   "org": "East Devon District Council",
   "area": "Seafront, near the station",
+  "lat": 50.6201,
+  "lng": -3.4113,
   "setting": "Outdoor",
   "capacity": 500,
   "capacityApprox": true,
-  "occasions": ["Community event", "Performance"],
-  "features": ["Power and water hook-up", "Toilets on site", "Car parks nearby"],
+  "occasions": [
+    "Community event",
+    "Performance"
+  ],
+  "features": [
+    "Power and water hook-up",
+    "Toilets on site",
+    "Car parks nearby"
+  ],
   "priceTier": 1,
   "priceFrom": "Council rate on request",
   "summary": "A large open ground by the seafront, big enough for a festival.",
   "description": "One of Exmouth's largest and most accessible open spaces, the Imperial Recreation Ground sits right by the seafront and the train station, with two of the town's biggest pay-and-display car parks next door. Toilets, water and an electricity hook-up are all available on request, which is why it is the go-to spot for the town's bigger outdoor events — festivals, fun days and fetes.",
   "image": "",
   "imageCredit": "",
-  "contact": { "type": "link", "value": "https://eastdevon.gov.uk/parks-gardens-and-recreation/events-filming-and-photography/organise-an-event-on-council-land/exmouth/", "name": "East Devon District Council" },
+  "contact": {
+    "type": "link",
+    "value": "https://eastdevon.gov.uk/parks-gardens-and-recreation/events-filming-and-photography/organise-an-event-on-council-land/exmouth/",
+    "name": "East Devon District Council"
+  },
   "source": "https://eastdevon.gov.uk/parks-gardens-and-recreation/events-filming-and-photography/organise-an-event-on-council-land/exmouth/",
   "checked": "2026-09"
 }

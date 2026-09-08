@@ -3,18 +3,32 @@
   "name": "The Estuary Suite",
   "org": "Ocean Exmouth",
   "area": "On the seafront",
+  "lat": 50.6148,
+  "lng": -3.4088,
   "setting": "Indoor",
   "capacity": 30,
   "capacityApprox": false,
-  "occasions": ["Party", "Meeting", "Wake"],
-  "features": ["Sea view", "Licensed bar", "Catering available"],
+  "occasions": [
+    "Party",
+    "Meeting",
+    "Wake"
+  ],
+  "features": [
+    "Sea view",
+    "Licensed bar",
+    "Catering available"
+  ],
   "priceTier": 2,
   "priceFrom": "From about £90",
   "summary": "A smaller room with its own terrace and estuary views.",
   "description": "The smaller of Ocean Exmouth's two hire spaces, the Estuary Suite shares the same building and the same estuary views but on a more intimate scale — a good fit for a wake, a christening tea, or a birthday for thirty or so. It opens onto the Ocean Deck terrace, so there is still outside space to use if the weather is kind.",
   "image": "",
   "imageCredit": "",
-  "contact": { "type": "email", "value": "events@oceanexmouth.co.uk", "name": "Ocean Exmouth events team" },
+  "contact": {
+    "type": "email",
+    "value": "events@oceanexmouth.co.uk",
+    "name": "Ocean Exmouth events team"
+  },
   "source": "https://www.oceanexmouth.co.uk/room-hire/celebrations/",
   "checked": "2026-09"
 }

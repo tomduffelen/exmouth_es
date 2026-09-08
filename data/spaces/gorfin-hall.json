@@ -3,18 +3,33 @@
   "name": "Gorfin Hall",
   "org": "Exmouth Town Council",
   "area": "Town centre",
+  "lat": 50.6186,
+  "lng": -3.4133,
   "setting": "Indoor",
   "capacity": 60,
   "capacityApprox": true,
-  "occasions": ["Meeting", "Community event", "Class or workshop", "Party"],
-  "features": ["Kitchenette", "Step-free access", "Central location"],
+  "occasions": [
+    "Meeting",
+    "Community event",
+    "Class or workshop",
+    "Party"
+  ],
+  "features": [
+    "Kitchenette",
+    "Step-free access",
+    "Central location"
+  ],
   "priceTier": 1,
   "priceFrom": "Council rate on request",
   "summary": "A modern community hall in a quiet corner of town.",
   "description": "Run by Exmouth Town Council, Gorfin Hall is a modern, adaptable community centre a short walk from the town centre. It is booked out for all sorts through the week — keep-fit classes, art groups, talks and lectures — and at weekends works well for children's parties or a family celebration, with a kitchenette on hand for refreshments.",
   "image": "",
   "imageCredit": "",
-  "contact": { "type": "email", "value": "reception@exmouth.gov.uk", "name": "Exmouth Town Council, 01395 276167" },
+  "contact": {
+    "type": "email",
+    "value": "reception@exmouth.gov.uk",
+    "name": "Exmouth Town Council, 01395 276167"
+  },
   "source": "https://exmouth.gov.uk/gorfin-hall/",
   "checked": "2026-09"
 }

@@ -3,18 +3,32 @@
   "name": "Manor Gardens Bandstand",
   "org": "East Devon District Council",
   "area": "Town centre",
+  "lat": 50.6198,
+  "lng": -3.4151,
   "setting": "Outdoor",
   "capacity": 100,
   "capacityApprox": true,
-  "occasions": ["Wedding", "Performance", "Community event"],
-  "features": ["Power and lighting", "Victorian gardens", "Step-free access"],
+  "occasions": [
+    "Wedding",
+    "Performance",
+    "Community event"
+  ],
+  "features": [
+    "Power and lighting",
+    "Victorian gardens",
+    "Step-free access"
+  ],
   "priceTier": 1,
   "priceFrom": "Council rate on request",
   "summary": "A Victorian bandstand set within the town gardens.",
   "description": "Manor Gardens is a Victorian-style, railed garden right in the centre of Exmouth, and its bandstand is one of the town's best-loved outdoor spots for an event. It is wired for power and lighting, which makes it a genuine option for an evening concert or open-air theatre, and it is a popular choice for wedding blessings. The surrounding gardens can also be booked exclusively if you want to charge admission or keep the space private.",
   "image": "",
   "imageCredit": "",
-  "contact": { "type": "link", "value": "https://eastdevon.gov.uk/parks-gardens-and-recreation/events-filming-and-photography/organise-an-event-on-council-land/exmouth/", "name": "East Devon District Council" },
+  "contact": {
+    "type": "link",
+    "value": "https://eastdevon.gov.uk/parks-gardens-and-recreation/events-filming-and-photography/organise-an-event-on-council-land/exmouth/",
+    "name": "East Devon District Council"
+  },
   "source": "https://eastdevon.gov.uk/parks-gardens-and-recreation/events-filming-and-photography/organise-an-event-on-council-land/exmouth/",
   "checked": "2026-09"
 }
