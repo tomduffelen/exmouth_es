@@ -14,12 +14,16 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/css/site.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 </head>
 <body>
 
 <header class="masthead">
   <a class="wordmark" href="./">Exmouth Spaces</a>
-  <a class="masthead-about" href="#about">About</a>
+  <nav class="masthead-nav">
+    <a href="#/map">Map</a>
+    <a href="#about">About</a>
+  </nav>
 </header>
 
 <main>
@@ -59,12 +63,17 @@
   </div>
 
   <article id="detailView" hidden></article>
+
+  <section id="mapView" hidden>
+    <div id="overviewMap" class="overview-map"></div>
+  </section>
 </main>
 
 <div class="sheet-backdrop" id="sheetBackdrop" hidden>
   <div class="sheet" id="sheet" role="dialog" aria-modal="true"></div>
 </div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="assets/js/app.js"></script>
 </body>
 </html>
