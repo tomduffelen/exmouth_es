@@ -86,37 +86,41 @@
     return parts.join(', ');
   }
 
-  /* A space with no photograph yet gets its name set on deep navy rather
-     than a broken image or a grey hole. */
+  /* A space with no photograph yet gets its name set on a short deep-navy
+     banner rather than a broken image or a grey hole. This is deliberately
+     NOT the same height as a real photo, so it can never be mistaken for a
+     heading belonging to the next space down. */
   function shotHTML(space, kind) {
-    var cls = kind === 'detail' ? 'detail-shot' : 'shot';
     if (space.image) {
+      var cls = kind === 'detail' ? 'detail-shot' : 'shot';
       return '<div class="' + cls + '">' +
         '<img src="' + esc(space.image) + '" alt="' + esc(space.name) + '" loading="lazy" ' +
-        'onerror="window.exmouthImageFallback(this)">' +
+        'onerror="window.exmouthImageFallback(this, \'' + kind + '\')">' +
         '</div>';
     }
-    return '<div class="' + cls + '">' + emptyShotMarkupRaw(space) + '</div>';
+    return emptyShotMarkupRaw(space, kind);
   }
 
-  function emptyShotMarkupRaw(space) {
-    return '<div class="shot-empty"><span>' + esc(space.name) + '</span></div>';
+  function emptyShotMarkupRaw(space, kind) {
+    var cls = kind === 'detail' ? 'shot-empty detail-media' : 'shot-empty';
+    return '<div class="' + cls + '"><span>' + esc(space.name) + '</span></div>';
   }
 
-  /* If a photo link is missing or broken, swap in the navy name panel.
-     This runs as real DOM operations rather than building an HTML string,
-     so a name with a quote mark or apostrophe in it can never break the
-     markup around it. */
-  window.exmouthImageFallback = function (imgEl) {
+  /* If a photo link is missing or broken, swap in the navy banner.
+     This mutates the DOM directly rather than building an HTML string, so a
+     name with a quote mark or apostrophe can never break the markup around
+     it — and on the detail page, it preserves the back button that sits
+     alongside the image rather than deleting it. */
+  window.exmouthImageFallback = function (imgEl, kind) {
     var wrapper = imgEl.parentNode;
     if (!wrapper) return;
+    var backBtn = wrapper.querySelector('[data-back]');
+    wrapper.className = kind === 'detail' ? 'shot-empty detail-media' : 'shot-empty';
     wrapper.innerHTML = '';
-    var box = document.createElement('div');
-    box.className = 'shot-empty';
+    if (backBtn) wrapper.appendChild(backBtn);
     var span = document.createElement('span');
     span.textContent = imgEl.alt;
-    box.appendChild(span);
-    wrapper.appendChild(box);
+    wrapper.appendChild(span);
   };
 
   /* --- Loading the data ------------------------------------------------ */
@@ -239,7 +243,13 @@
         '<p class="label">' + (s.setting === 'Outdoor' ? 'Outdoor space' : 'Indoor space') + '</p>' +
         '<h1 class="detail-name">' + esc(s.name) + '</h1>' +
         '<p class="detail-org">' + esc(s.org) + ', ' + esc(s.area.toLowerCase()) + '</p>' +
-        '<p class="detail-desc">' + esc(s.description || s.summary) + '</p>' +
+        '<div class="quickfacts">' +
+          '<span class="fact">' + esc(s.setting === 'Outdoor' ? 'Outdoors' : 'Indoors') + '</span>' +
+          '<span class="fact">' + esc(capacityText(s)) + '</span>' +
+          (s.priceFrom ? '<span class="fact">' + esc(s.priceFrom) + '</span>' : '') +
+        '</div>' +
+        '<p class="detail-desc desc-collapsed" data-desc>' + esc(s.description || s.summary) + '</p>' +
+        '<button type="button" class="read-more" data-read-more>Read more</button>' +
       '</div>' +
       '<dl class="specs">' +
         specs.filter(function (row) { return row[1]; }).map(function (row) {
@@ -420,6 +430,16 @@
       if (space) { window.location.hash = '#/space/' + space.dataset.space; return; }
 
       if (t.closest('[data-back]')) { window.location.hash = ''; return; }
+
+      var readMore = t.closest('[data-read-more]');
+      if (readMore) {
+        var desc = document.querySelector('[data-desc]');
+        if (desc) {
+          var collapsed = desc.classList.toggle('desc-collapsed');
+          readMore.textContent = collapsed ? 'Read more' : 'Show less';
+        }
+        return;
+      }
 
       var slot = t.closest('[data-sheet]');
       if (slot) { openSheet(slot.dataset.sheet); return; }
