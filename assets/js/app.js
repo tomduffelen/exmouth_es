@@ -94,16 +94,20 @@
     if (space.image) {
       var cls = kind === 'detail' ? 'detail-shot' : 'shot';
       return '<div class="' + cls + '">' +
-        '<img src="' + esc(space.image) + '" alt="' + esc(space.name) + '" loading="lazy" ' +
+        '<img src="' + esc(space.image) + '" alt="' + esc(space.name) + '" data-org="' + esc(space.org) + '" loading="lazy" ' +
         'onerror="window.exmouthImageFallback(this, \'' + kind + '\')">' +
         '</div>';
     }
     return emptyShotMarkupRaw(space, kind);
   }
 
+  /* The banner shows the venue (org), not the specific room name — "Ocean
+     Exmouth" means something to a visitor even without a photo; "The Ocean
+     Suite" on its own doesn't. The room's own name still shows properly as
+     the heading right below it. */
   function emptyShotMarkupRaw(space, kind) {
     var cls = kind === 'detail' ? 'shot-empty detail-media' : 'shot-empty';
-    return '<div class="' + cls + '"><span>' + esc(space.name) + '</span></div>';
+    return '<div class="' + cls + '"><span>' + esc(space.org) + '</span></div>';
   }
 
   /* If a photo link is missing or broken, swap in the navy banner.
@@ -119,7 +123,7 @@
     wrapper.innerHTML = '';
     if (backBtn) wrapper.appendChild(backBtn);
     var span = document.createElement('span');
-    span.textContent = imgEl.alt;
+    span.textContent = imgEl.dataset.org || imgEl.alt;
     wrapper.appendChild(span);
   };
 
