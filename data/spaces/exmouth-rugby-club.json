@@ -1,0 +1,20 @@
+{
+  "id": "exmouth-rugby-club",
+  "name": "Exmouth Rugby Club",
+  "org": "Exmouth Rugby Club",
+  "area": "Exmouth",
+  "setting": "Indoor",
+  "capacity": 100,
+  "capacityApprox": true,
+  "occasions": ["Wedding", "Party", "Wake", "Community event"],
+  "features": ["Bar", "Kitchen", "Outdoor patio", "Parking"],
+  "priceTier": 1,
+  "priceFrom": "Club rates on request",
+  "summary": "A clubhouse with its own bar, kitchen and patio for the barbecue.",
+  "description": "The clubhouse at Exmouth Rugby Club is a proper community venue: a main hall with its own bar, a members' lounge, a working kitchen, and an outdoor patio with picnic tables for a barbecue. It is used for a real mix of occasions — christenings, wedding receptions, wakes, big birthday parties — and being a members' club, rates tend to be friendlier than a hotel or restaurant.",
+  "image": "",
+  "imageCredit": "",
+  "contact": { "type": "link", "value": "https://www.exmouthrugby.co.uk/a/hire-our-venue-21818.html", "name": "Exmouth Rugby Club" },
+  "source": "https://www.exmouthrugby.co.uk/a/hire-our-venue-21818.html",
+  "checked": "2026-09"
+}

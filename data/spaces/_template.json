@@ -1,0 +1,29 @@
+{
+  "_readme": "Copy this file, rename it to match the id below, fill it in, then add the id to index.json. Delete this _readme line. Full guide: docs/adding-a-space.md",
+
+  "id": "my-new-space",
+  "name": "The Name Of The Space",
+  "org": "Who runs it",
+  "area": "Where in Exmouth",
+
+  "setting": "Indoor",
+  "capacity": 50,
+  "capacityApprox": true,
+
+  "occasions": ["Party", "Meeting"],
+  "features": ["Kitchen", "Parking"],
+
+  "priceTier": 1,
+  "priceFrom": "Price on request",
+
+  "summary": "One sentence for the browse list.",
+  "description": "A paragraph for the space's own page. What is it like, what is it good for, what should someone know before enquiring.",
+
+  "image": "",
+  "imageCredit": "",
+
+  "contact": { "type": "email", "value": "someone@example.com", "name": "Who to ask for" },
+
+  "source": "https://example.com/their-hire-page",
+  "checked": "2026-09"
+}

@@ -1,0 +1,20 @@
+{
+  "id": "st-john-church-hall",
+  "name": "St John the Evangelist Church Hall",
+  "org": "Withycombe Raleigh with Exmouth Parish",
+  "area": "Withycombe",
+  "setting": "Indoor",
+  "capacity": 80,
+  "capacityApprox": true,
+  "occasions": ["Party", "Wake", "Community event", "Class or workshop"],
+  "features": ["Kitchen", "Parking", "Accessible toilet"],
+  "priceTier": 1,
+  "priceFrom": "Parish rates on request",
+  "summary": "A well-kept hall behind the parish church in Withycombe.",
+  "description": "Tucked behind the parish church in Withycombe, this hall is a well-used local fixture — home to regular community groups through the week and available to hire for parties, wakes and other gatherings at weekends. It is fully accessible, with well-equipped kitchens and an accessible toilet with baby changing.",
+  "image": "",
+  "imageCredit": "",
+  "contact": { "type": "phone", "value": "01395 272239", "name": "Parish Office" },
+  "source": "https://www.withycombe.org/sje-hall",
+  "checked": "2026-09"
+}

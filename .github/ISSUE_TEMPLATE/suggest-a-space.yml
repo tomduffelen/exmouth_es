@@ -1,0 +1,56 @@
+name: Suggest a space
+description: Tell us about a space in Exmouth that should be listed
+title: "Space: "
+labels: ["new space"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping. You do not need to know how to code — fill this in
+        and a volunteer will add it. Everything except the name is optional.
+  - type: input
+    id: name
+    attributes:
+      label: Name of the space
+      placeholder: Beach Gardens Pavilion
+    validations:
+      required: true
+  - type: input
+    id: org
+    attributes:
+      label: Who runs it
+      placeholder: East Devon District Council
+  - type: input
+    id: area
+    attributes:
+      label: Where in Exmouth
+      placeholder: Seafront
+  - type: dropdown
+    id: setting
+    attributes:
+      label: Indoors or outdoors
+      options:
+        - Indoor
+        - Outdoor
+  - type: input
+    id: capacity
+    attributes:
+      label: Roughly how many people does it hold
+      placeholder: About 60
+  - type: input
+    id: contact
+    attributes:
+      label: How do people book it
+      placeholder: Email address, phone number, or a link to their booking page
+  - type: textarea
+    id: about
+    attributes:
+      label: What is it like
+      placeholder: What is the space like, and what sort of events suit it
+  - type: checkboxes
+    id: permission
+    attributes:
+      label: Before we list it
+      options:
+        - label: I have asked the venue and they are happy to be listed
+        - label: If I am supplying a photograph, I took it or have permission to use it

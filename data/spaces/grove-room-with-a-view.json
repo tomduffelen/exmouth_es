@@ -1,0 +1,20 @@
+{
+  "id": "grove-room-with-a-view",
+  "name": "Room With a View",
+  "org": "The Grove Exmouth",
+  "area": "On the seafront",
+  "setting": "Indoor",
+  "capacity": 50,
+  "capacityApprox": false,
+  "occasions": ["Wedding", "Party", "Meeting"],
+  "features": ["Sea view", "Bar", "Dog friendly", "Near the station"],
+  "priceTier": 2,
+  "priceFrom": "Price on request",
+  "summary": "An upstairs function room above a seafront pub, looking over the Exe.",
+  "description": "Up a flight of stairs above the Grove's ground-floor pub, this function room looks straight out over the mouth of the River Exe. It is a flexible space — Young's, who run the pub, set it up for everything from wedding receptions and christenings to work away-days — and food ranges from a drinks-and-canapes reception through to a full sit-down meal.",
+  "image": "",
+  "imageCredit": "",
+  "contact": { "type": "email", "value": "groveexmouth@youngs.co.uk", "name": "The Grove Exmouth, 01395 272101" },
+  "source": "https://www.groveexmouth.co.uk/parties/",
+  "checked": "2026-09"
+}

@@ -1,0 +1,20 @@
+{
+  "id": "exmouth-town-hall",
+  "name": "Exmouth Town Hall",
+  "org": "Exmouth Town Council",
+  "area": "Town centre",
+  "setting": "Indoor",
+  "capacity": 40,
+  "capacityApprox": true,
+  "occasions": ["Meeting", "Class or workshop"],
+  "features": ["Kitchenette", "Central location", "Formal setting"],
+  "priceTier": 1,
+  "priceFrom": "Council rate on request",
+  "summary": "Council chamber and committee rooms in the heart of town.",
+  "description": "For something more formal, Exmouth Town Council hires out the Council Chamber and Committee Room at the Town Hall, along with a couple of smaller meeting and interview rooms. Booking includes use of a kitchenette for tea and coffee — a straightforward option for AGMs, training sessions or committee meetings that need a proper table and chairs rather than a party atmosphere.",
+  "image": "",
+  "imageCredit": "",
+  "contact": { "type": "email", "value": "reception@exmouth.gov.uk", "name": "Exmouth Town Council, 01395 276167" },
+  "source": "https://exmouth.gov.uk/facilities-for-hire/the-town-hall/",
+  "checked": "2026-09"
+}

@@ -1,0 +1,505 @@
+/* ==========================================================================
+   Exmouth Spaces
+   Loads every space from data/spaces/, then runs the list, the filters
+   and the detail pages. No build step and no framework — this file is the
+   whole application.
+   ========================================================================== */
+
+(function () {
+  'use strict';
+
+  /* --- Filter vocabulary ------------------------------------------------
+     Add an occasion here and it appears in the filter sheet automatically.
+     It must match the wording used in each space file's "occasions" list. */
+
+  var OCCASIONS = [
+    'Wedding',
+    'Party',
+    'Meeting',
+    'Community event',
+    'Wake',
+    'Class or workshop',
+    'Performance'
+  ];
+
+  var GUEST_STEPS = [
+    { value: 0,   label: 'any number of guests', short: 'any number' },
+    { value: 20,  label: '20 guests or more',    short: '20 or more' },
+    { value: 50,  label: '50 guests or more',    short: '50 or more' },
+    { value: 100, label: '100 guests or more',   short: '100 or more' },
+    { value: 200, label: '200 guests or more',   short: '200 or more' }
+  ];
+
+  var SETTINGS = [
+    { value: 'Any',     label: 'indoors or out' },
+    { value: 'Indoor',  label: 'indoors' },
+    { value: 'Outdoor', label: 'outdoors' }
+  ];
+
+  var BUDGETS = [
+    { value: 1, label: 'Modest' },
+    { value: 2, label: 'Mid-range' },
+    { value: 3, label: 'Premium' }
+  ];
+
+  var PRICE_WORD = { 1: 'modest', 2: 'mid-range', 3: 'premium' };
+
+  /* --- State ----------------------------------------------------------- */
+
+  var SPACES = [];
+
+  var filters = {
+    occasion: null,
+    guests: 0,
+    setting: 'Any',
+    budgets: []
+  };
+
+  var el = {};
+  var currentSpaceId = null;
+
+  /* --- Helpers --------------------------------------------------------- */
+
+  function $(id) { return document.getElementById(id); }
+
+  /* Everything from the data files goes through this before it reaches the
+     page, so an apostrophe or stray bracket in a venue description can never
+     break the layout. */
+  function esc(value) {
+    return String(value == null ? '' : value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function capacityText(space) {
+    return (space.capacityApprox ? 'up to about ' : 'up to ') + space.capacity;
+  }
+
+  function metaLine(space) {
+    var parts = [];
+    parts.push(space.setting === 'Outdoor' ? 'Outdoors' : 'Indoors');
+    parts.push('for ' + capacityText(space));
+    if (space.priceFrom) parts.push(space.priceFrom.toLowerCase());
+    return parts.join(', ');
+  }
+
+  /* A space with no photograph yet gets its name set on deep navy rather
+     than a broken image or a grey hole. */
+  function shotHTML(space, kind) {
+    var cls = kind === 'detail' ? 'detail-shot' : 'shot';
+    if (space.image) {
+      return '<div class="' + cls + '">' +
+        '<img src="' + esc(space.image) + '" alt="' + esc(space.name) + '" loading="lazy" ' +
+        'onerror="this.parentNode.innerHTML=\'' + emptyShotMarkup(space) + '\'">' +
+        '</div>';
+    }
+    return '<div class="' + cls + '">' + emptyShotMarkupRaw(space) + '</div>';
+  }
+
+  function emptyShotMarkupRaw(space) {
+    return '<div class="shot-empty"><span>' + esc(space.name) + '</span></div>';
+  }
+
+  function emptyShotMarkup(space) {
+    return emptyShotMarkupRaw(space).replace(/'/g, '&#39;');
+  }
+
+  /* --- Loading the data ------------------------------------------------ */
+
+  function loadSpaces() {
+    return fetch('data/spaces/index.json')
+      .then(function (r) {
+        if (!r.ok) throw new Error('Could not read data/spaces/index.json');
+        return r.json();
+      })
+      .then(function (ids) {
+        return Promise.all(ids.map(function (id) {
+          return fetch('data/spaces/' + id + '.json')
+            .then(function (r) {
+              if (!r.ok) throw new Error('Missing file: data/spaces/' + id + '.json');
+              return r.json();
+            });
+        }));
+      });
+  }
+
+  /* --- Filtering ------------------------------------------------------- */
+
+  function matching() {
+    return SPACES.filter(function (s) {
+      if (filters.occasion && (s.occasions || []).indexOf(filters.occasion) === -1) return false;
+      if (filters.guests > 0 && s.capacity < filters.guests) return false;
+      if (filters.setting !== 'Any' && s.setting !== filters.setting) return false;
+      if (filters.budgets.length && filters.budgets.indexOf(s.priceTier) === -1) return false;
+      return true;
+    });
+  }
+
+  function guestStep() {
+    for (var i = 0; i < GUEST_STEPS.length; i++) {
+      if (GUEST_STEPS[i].value === filters.guests) return GUEST_STEPS[i];
+    }
+    return GUEST_STEPS[0];
+  }
+
+  function settingOption() {
+    for (var i = 0; i < SETTINGS.length; i++) {
+      if (SETTINGS[i].value === filters.setting) return SETTINGS[i];
+    }
+    return SETTINGS[0];
+  }
+
+  /* --- Rendering the sentence ------------------------------------------ */
+
+  function renderSentence() {
+    var occLabel = filters.occasion ? filters.occasion.toLowerCase() : 'any occasion';
+    var chev = '<span class="chev" aria-hidden="true">▾</span>';
+
+    el.sentence.innerHTML =
+      '<button type="button" class="slot" data-sheet="occasion" data-set="' + (!!filters.occasion) + '">' +
+        esc(occLabel) + chev +
+      '</button>, for ' +
+      '<button type="button" class="slot" data-sheet="guests" data-set="' + (filters.guests > 0) + '">' +
+        esc(guestStep().label) + chev +
+      '</button>, ' +
+      '<button type="button" class="slot" data-sheet="setting" data-set="' + (filters.setting !== 'Any') + '">' +
+        esc(settingOption().label) + chev +
+      '</button>';
+  }
+
+  /* --- Rendering the list ---------------------------------------------- */
+
+  function renderList() {
+    var list = matching();
+
+    renderSentence();
+    el.count.textContent = list.length === SPACES.length
+      ? SPACES.length + ' spaces'
+      : list.length + ' of ' + SPACES.length + ' spaces';
+
+    if (!list.length) {
+      el.spaces.innerHTML = '';
+      el.empty.hidden = false;
+      return;
+    }
+
+    el.empty.hidden = true;
+    el.spaces.innerHTML = list.map(function (s) {
+      return '<button type="button" class="space" data-space="' + esc(s.id) + '">' +
+        shotHTML(s, 'card') +
+        '<div class="space-text">' +
+          '<h2 class="space-name">' + esc(s.name) + '</h2>' +
+          '<p class="space-org">' + esc(s.org) + ', ' + esc(s.area.toLowerCase()) + '</p>' +
+          '<p class="space-meta">' + esc(metaLine(s)) + '</p>' +
+        '</div>' +
+      '</button>';
+    }).join('');
+  }
+
+  /* --- Rendering a detail page ----------------------------------------- */
+
+  function renderDetail(s) {
+    var contact = s.contact || {};
+    var action;
+
+    if (contact.type === 'email') {
+      action = '<button type="button" class="contact-btn" data-enquire="' + esc(s.id) + '">Email to enquire</button>';
+    } else if (contact.type === 'phone') {
+      action = '<a class="contact-btn" href="tel:' + esc(String(contact.value).replace(/\s+/g, '')) + '">Call ' + esc(contact.value) + '</a>';
+    } else {
+      action = '<a class="contact-btn" href="' + esc(contact.value) + '" target="_blank" rel="noopener">View booking details</a>';
+    }
+
+    var specs = [
+      ['Setting',  s.setting === 'Outdoor' ? 'Outdoors' : 'Indoors'],
+      ['Capacity', capacityText(s) + ' guests'],
+      ['Hire',     s.priceFrom || PRICE_WORD[s.priceTier] || ''],
+      ['Suited to', (s.occasions || []).join(', ')],
+      ['Facilities', (s.features || []).join(', ')]
+    ];
+
+    el.detail.innerHTML =
+      shotHTML(s, 'detail').replace('">', '"><button type="button" class="back" data-back aria-label="Back to all spaces">←</button>') +
+      '<div class="detail-head">' +
+        '<p class="label">' + (s.setting === 'Outdoor' ? 'Outdoor space' : 'Indoor space') + '</p>' +
+        '<h1 class="detail-name">' + esc(s.name) + '</h1>' +
+        '<p class="detail-org">' + esc(s.org) + ', ' + esc(s.area.toLowerCase()) + '</p>' +
+        '<p class="detail-desc">' + esc(s.description || s.summary) + '</p>' +
+      '</div>' +
+      '<dl class="specs">' +
+        specs.filter(function (row) { return row[1]; }).map(function (row) {
+          return '<div class="spec"><dt>' + esc(row[0]) + '</dt><dd>' + esc(row[1]) + '</dd></div>';
+        }).join('') +
+      '</dl>' +
+      '<p class="checked">Details checked ' + esc(formatChecked(s.checked)) +
+        (s.source ? ' · <a href="' + esc(s.source) + '" target="_blank" rel="noopener">source</a>' : '') +
+        '. Please confirm availability and price with the venue.' +
+        (s.imageCredit ? ' Photograph: ' + esc(s.imageCredit) + '.' : '') +
+      '</p>' +
+      '<div class="contact-bar"><div class="contact-bar-inner">' + action + '</div></div>';
+  }
+
+  function formatChecked(value) {
+    if (!value) return 'recently';
+    var months = ['January', 'February', 'March', 'April', 'May', 'June',
+                  'July', 'August', 'September', 'October', 'November', 'December'];
+    var bits = String(value).split('-');
+    var m = parseInt(bits[1], 10);
+    if (!bits[0] || !m || !months[m - 1]) return value;
+    return months[m - 1] + ' ' + bits[0];
+  }
+
+  /* --- Sheets ---------------------------------------------------------- */
+
+  function optionRow(label, checked, attrs) {
+    return '<button type="button" class="opt" role="checkbox" aria-checked="' + checked + '" ' + attrs + '>' +
+      '<span>' + esc(label) + '</span>' +
+      (checked ? '<span class="tick" aria-hidden="true">✓</span>' : '') +
+    '</button>';
+  }
+
+  function openSheet(which) {
+    var title = '';
+    var body = '';
+
+    if (which === 'occasion') {
+      title = 'What are you planning?';
+      body = optionRow('Any occasion', !filters.occasion, 'data-pick="occasion" data-value=""') +
+        OCCASIONS.map(function (o) {
+          return optionRow(o, filters.occasion === o, 'data-pick="occasion" data-value="' + esc(o) + '"');
+        }).join('');
+
+    } else if (which === 'guests') {
+      title = 'How many guests?';
+      body = GUEST_STEPS.map(function (g) {
+        return optionRow(g.label.charAt(0).toUpperCase() + g.label.slice(1),
+          filters.guests === g.value, 'data-pick="guests" data-value="' + g.value + '"');
+      }).join('');
+
+    } else if (which === 'setting') {
+      title = 'Indoors or outdoors?';
+      body = SETTINGS.map(function (s) {
+        return optionRow(s.label.charAt(0).toUpperCase() + s.label.slice(1),
+          filters.setting === s.value, 'data-pick="setting" data-value="' + esc(s.value) + '"');
+      }).join('');
+
+    } else if (which === 'refine') {
+      title = 'Refine';
+      body = '<div class="sheet-group"><p class="label">Budget</p>' +
+        BUDGETS.map(function (b) {
+          return optionRow(b.label, filters.budgets.indexOf(b.value) !== -1,
+            'data-pick="budget" data-value="' + b.value + '"');
+        }).join('') +
+        '</div>' +
+        '<div class="sheet-group"><p class="label">Setting</p>' +
+        SETTINGS.map(function (s) {
+          return optionRow(s.label.charAt(0).toUpperCase() + s.label.slice(1),
+            filters.setting === s.value, 'data-pick="setting" data-value="' + esc(s.value) + '"');
+        }).join('') +
+        '</div>' +
+        '<button type="button" class="sheet-done" data-clear>Clear all filters</button>';
+    }
+
+    el.sheet.innerHTML =
+      '<div class="sheet-head">' +
+        '<h2>' + esc(title) + '</h2>' +
+        '<button type="button" class="sheet-close" data-close-sheet aria-label="Close">✕</button>' +
+      '</div>' + body;
+
+    el.sheetBackdrop.hidden = false;
+    document.body.style.overflow = 'hidden';
+    var first = el.sheet.querySelector('.opt, .sheet-close');
+    if (first) first.focus();
+  }
+
+  /* The enquiry form lives in a sheet too, so there is one overlay pattern
+     on the whole site rather than two. */
+  function openEnquiry(s) {
+    currentSpaceId = s.id;
+    var contact = s.contact || {};
+
+    el.sheet.innerHTML =
+      '<div class="sheet-head">' +
+        '<h2>Enquire about ' + esc(s.name) + '</h2>' +
+        '<button type="button" class="sheet-close" data-close-sheet aria-label="Close">✕</button>' +
+      '</div>' +
+      '<form id="enquiryForm" novalidate>' +
+        '<div class="field"><label for="fName">Your name</label>' +
+          '<input type="text" id="fName" autocomplete="name"></div>' +
+        '<div class="pair">' +
+          '<div class="field"><label for="fDate">Date</label><input type="date" id="fDate"></div>' +
+          '<div class="field"><label for="fGuests">Guests</label><input type="number" id="fGuests" min="1" inputmode="numeric"></div>' +
+        '</div>' +
+        '<div class="field"><label for="fMessage">Message</label>' +
+          '<textarea id="fMessage">I would like to find out more about hiring ' + esc(s.name) + '.</textarea></div>' +
+        '<button type="submit" class="sheet-done" style="margin-top:8px">Open in your email app</button>' +
+        '<p class="form-note">This opens your own email app with the message ready to send to ' +
+          esc(contact.name || contact.value) + '. Nothing is sent automatically and nothing is stored by this site.</p>' +
+      '</form>';
+
+    el.sheetBackdrop.hidden = false;
+    document.body.style.overflow = 'hidden';
+    var nameField = $('fName');
+    if (nameField) nameField.focus();
+  }
+
+  function closeSheet() {
+    el.sheetBackdrop.hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  function sendEnquiry() {
+    var s = SPACES.filter(function (x) { return x.id === currentSpaceId; })[0];
+    if (!s) return;
+
+    var name = ($('fName') || {}).value || '';
+    var date = ($('fDate') || {}).value || '';
+    var guests = ($('fGuests') || {}).value || '';
+    var message = ($('fMessage') || {}).value || '';
+
+    var lines = ['Hello,', '', message.trim(), ''];
+    if (date) lines.push('Preferred date: ' + date);
+    if (guests) lines.push('Number of guests: ' + guests);
+    lines.push('');
+    lines.push(name.trim() ? name.trim() : 'Sent via Exmouth Spaces');
+
+    window.location.href = 'mailto:' + s.contact.value +
+      '?subject=' + encodeURIComponent('Enquiry about ' + s.name) +
+      '&body=' + encodeURIComponent(lines.join('\n'));
+  }
+
+  /* --- Routing ---------------------------------------------------------
+     Buttons rather than links, so that changing view never looks like
+     leaving the site. The URL still updates, so a space can be shared. */
+
+  function route() {
+    var match = window.location.hash.match(/^#\/space\/(.+)$/);
+    var space = null;
+
+    if (match) {
+      var wanted = decodeURIComponent(match[1]);
+      space = SPACES.filter(function (s) { return s.id === wanted; })[0] || null;
+    }
+
+    if (space) {
+      el.listView.hidden = true;
+      el.detail.hidden = false;
+      renderDetail(space);
+      document.title = space.name + ' — Exmouth Spaces';
+    } else {
+      el.detail.hidden = true;
+      el.detail.innerHTML = '';
+      el.listView.hidden = false;
+      document.title = 'Exmouth Spaces — find a space to hire in Exmouth';
+    }
+    window.scrollTo(0, 0);
+  }
+
+  /* --- Events ---------------------------------------------------------- */
+
+  function wire() {
+    document.body.addEventListener('click', function (e) {
+      var t = e.target;
+
+      var space = t.closest('[data-space]');
+      if (space) { window.location.hash = '#/space/' + space.dataset.space; return; }
+
+      if (t.closest('[data-back]')) { window.location.hash = ''; return; }
+
+      var slot = t.closest('[data-sheet]');
+      if (slot) { openSheet(slot.dataset.sheet); return; }
+
+      if (t.closest('[data-refine]')) { openSheet('refine'); return; }
+
+      var enquire = t.closest('[data-enquire]');
+      if (enquire) {
+        var s = SPACES.filter(function (x) { return x.id === enquire.dataset.enquire; })[0];
+        if (s) openEnquiry(s);
+        return;
+      }
+
+      if (t.closest('[data-close-sheet]')) { closeSheet(); return; }
+
+      if (t.closest('[data-clear]')) {
+        filters = { occasion: null, guests: 0, setting: 'Any', budgets: [] };
+        renderList();
+        closeSheet();
+        return;
+      }
+
+      var pick = t.closest('[data-pick]');
+      if (pick) {
+        var kind = pick.dataset.pick;
+        var value = pick.dataset.value;
+
+        if (kind === 'occasion') {
+          filters.occasion = value || null;
+        } else if (kind === 'guests') {
+          filters.guests = parseInt(value, 10) || 0;
+        } else if (kind === 'setting') {
+          filters.setting = value;
+        } else if (kind === 'budget') {
+          var tier = parseInt(value, 10);
+          var at = filters.budgets.indexOf(tier);
+          if (at === -1) filters.budgets.push(tier); else filters.budgets.splice(at, 1);
+        }
+
+        renderList();
+        if (kind === 'budget') openSheet('refine'); else closeSheet();
+        return;
+      }
+
+      if (t === el.sheetBackdrop) closeSheet();
+    });
+
+    document.body.addEventListener('submit', function (e) {
+      if (e.target && e.target.id === 'enquiryForm') {
+        e.preventDefault();
+        sendEnquiry();
+      }
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && !el.sheetBackdrop.hidden) closeSheet();
+    });
+
+    window.addEventListener('hashchange', route);
+  }
+
+  /* --- Start ----------------------------------------------------------- */
+
+  function start() {
+    el.sentence = $('sentence');
+    el.count = $('count');
+    el.spaces = $('spaces');
+    el.empty = $('empty');
+    el.listView = $('listView');
+    el.detail = $('detailView');
+    el.sheet = $('sheet');
+    el.sheetBackdrop = $('sheetBackdrop');
+
+    wire();
+
+    loadSpaces()
+      .then(function (spaces) {
+        SPACES = spaces;
+        renderList();
+        route();
+      })
+      .catch(function (err) {
+        el.spaces.innerHTML = '<p class="empty">The list of spaces could not be loaded. ' +
+          'If you are previewing this on your own machine, run it through a local web server ' +
+          'rather than opening the file directly — see the README.</p>';
+        if (window.console) window.console.error(err);
+      });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+})();
