@@ -239,6 +239,8 @@
       ['Setting',  s.setting === 'Outdoor' ? 'Outdoors' : 'Indoors'],
       ['Capacity', capacityText(s) + ' guests'],
       ['Hire',     s.priceFrom || PRICE_WORD[s.priceTier] || ''],
+      ['Phone',    s.phone || ''],
+      ['Email',    s.email || ''],
       ['Suited to', (s.occasions || []).join(', ')],
       ['Facilities', (s.features || []).join(', ')]
     ];
