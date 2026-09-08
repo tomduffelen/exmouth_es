@@ -360,7 +360,7 @@ button {
 /* Small map on a space's own page. Interaction is switched off — a phone
    finger landing on it should scroll the page, not pan the map — and
    "Get directions" hands off to a real map app for actual navigation. */
-.mini-map { height: 200px; margin: 22px var(--gutter) 0; border: 1px solid var(--rule); background: var(--paper-deep); }
+.mini-map { height: 200px; margin: 22px var(--gutter) 0; border: 1px solid var(--rule); background: var(--paper-deep); position: relative; z-index: 0; }
 
 .directions-link {
   display: inline-block;
@@ -382,6 +382,8 @@ button {
 .overview-map {
   height: calc(100vh - 78px);
   min-height: 420px;
+  position: relative;
+  z-index: 0;
 }
 
 .map-popup { font-family: var(--font-ui); }
