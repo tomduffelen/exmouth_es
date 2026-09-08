@@ -1,34 +1,36 @@
 {
   "_readme": "Copy this file, rename it to match the id below, fill it in, then add the id to index.json. Delete this _readme line. For lat/lng: open Google Maps, search the venue, right-click (or long-press) the exact spot, and the coordinates pop up ready to copy. Full guide: docs/adding-a-space.md",
-
+  "_imagesNote": "images is a list, even for one photo. The FIRST one is used on the browse page. Two or more turns the space's own page into a swipeable gallery automatically \u2014 no extra setting needed. Delete this line too.",
   "id": "my-new-space",
   "name": "The Name Of The Space",
   "org": "Who runs it",
   "area": "Where in Exmouth",
   "lat": 50.6188,
   "lng": -3.4136,
-
   "setting": "Indoor",
   "capacity": 50,
   "capacityApprox": true,
-
-  "occasions": ["Party", "Meeting"],
-  "features": ["Kitchen", "Parking"],
-
+  "occasions": [
+    "Party",
+    "Meeting"
+  ],
+  "features": [
+    "Kitchen",
+    "Parking"
+  ],
   "priceTier": 1,
   "priceFrom": "Price on request",
-
   "phone": "",
   "email": "",
-
   "summary": "One sentence for the browse list.",
   "description": "A paragraph for the space's own page. What is it like, what is it good for, what should someone know before enquiring.",
-
-  "image": "",
+  "images": [],
   "imageCredit": "",
-
-  "contact": { "type": "email", "value": "someone@example.com", "name": "Who to ask for" },
-
+  "contact": {
+    "type": "email",
+    "value": "someone@example.com",
+    "name": "Who to ask for"
+  },
   "source": "https://example.com/their-hire-page",
   "checked": "2026-09"
 }
