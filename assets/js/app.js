@@ -93,7 +93,7 @@
     if (space.image) {
       return '<div class="' + cls + '">' +
         '<img src="' + esc(space.image) + '" alt="' + esc(space.name) + '" loading="lazy" ' +
-        'onerror="this.parentNode.innerHTML=\'' + emptyShotMarkup(space) + '\'">' +
+        'onerror="window.exmouthImageFallback(this)">' +
         '</div>';
     }
     return '<div class="' + cls + '">' + emptyShotMarkupRaw(space) + '</div>';
@@ -103,9 +103,21 @@
     return '<div class="shot-empty"><span>' + esc(space.name) + '</span></div>';
   }
 
-  function emptyShotMarkup(space) {
-    return emptyShotMarkupRaw(space).replace(/'/g, '&#39;');
-  }
+  /* If a photo link is missing or broken, swap in the navy name panel.
+     This runs as real DOM operations rather than building an HTML string,
+     so a name with a quote mark or apostrophe in it can never break the
+     markup around it. */
+  window.exmouthImageFallback = function (imgEl) {
+    var wrapper = imgEl.parentNode;
+    if (!wrapper) return;
+    wrapper.innerHTML = '';
+    var box = document.createElement('div');
+    box.className = 'shot-empty';
+    var span = document.createElement('span');
+    span.textContent = imgEl.alt;
+    box.appendChild(span);
+    wrapper.appendChild(box);
+  };
 
   /* --- Loading the data ------------------------------------------------ */
 
